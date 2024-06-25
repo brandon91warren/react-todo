@@ -1,32 +1,22 @@
 import "./App.css";
-
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-
-// Create an array with at least 3 objects containing id and title properties
-const todoList = [
-  { id: 1, title: 'Complete assignment' },
-  { id: 2, title: 'Read a book' },
-  { id: 3, title: 'Go for a walk' }
-]
+import { useState } from 'react';
+import reactLogo from './assets/react.svg';
+import viteLogo from '/vite.svg';
+import './App.css';
+import TodoList from './todolist';
+import AddTodoForm from './AddToDoForm'; // Import the new component
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [count, setCount] = useState(0);
 
-  // Return JSX with a JavaScript expression to render todoList items
+  // Return JSX with the TodoList and AddTodoForm components
   return (
     <>
       <h1>Todo List</h1>
-      <ul>
-        {todoList.map((item) => (
-          <li key={item.id}>{item.title}</li>
-        ))}
-      </ul>
+      <AddTodoForm /> {/* Add the new component here */}
+      <TodoList />
     </>
-  )
+  );
 }
 
-export default App
-
+export default App;
