@@ -4,7 +4,7 @@ import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 import TodoList from './todolist';
-import AddTodoForm from './AddToDoForm'; // Import the new component
+import AddTodoForm from './addtodoform'; // Import the new component
 
 function App() {
   const [count, setCount] = useState(0);
