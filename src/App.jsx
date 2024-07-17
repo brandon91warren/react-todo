@@ -1,7 +1,7 @@
 import "./App.css";
 import { useState } from 'react';
-import TodoList from './Todolist';
-import AddTodoForm from './AddTodoForm';
+import TodoList from './TodoList';
+import AddTodoForm from './AddToDoForm';
 
 function App() {
   const [todoList, setTodoList] = useState([]); // Step 1: Create todoList state
