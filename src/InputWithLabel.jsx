@@ -1,7 +1,7 @@
 function InputWithLabel(props) {
     return(
         <>
-        <label htmlFor="ToDoType">{props.label}</label>
+        <label htmlFor="ToDoType">{props.children}</label>
         <input
         type="text"
         name="title"
