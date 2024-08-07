@@ -1,14 +1,16 @@
-import React from 'react';
+import TodoListItem from "./todolistitem.jsx";
 
-function TodoList({ todoList }) {
+export default function TodosList({ todoList, onRemoveTodo }) {
   return (
     <ul>
       {todoList.map((todo) => (
-        <li key={todo.id}>{todo.title}</li>
+        <TodoListItem
+          key={todo.id}
+          title={todo.title}
+          onRemoveTodo={onRemoveTodo}
+          id={todo.id}
+        />
       ))}
     </ul>
   );
 }
-
-export default TodoList;
-
