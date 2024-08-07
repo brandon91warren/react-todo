@@ -3,29 +3,35 @@ import { useEffect, useState } from "react";
 import TodoList from './todolist';
 import AddTodoForm from './AddToDoForm';
 
-function useSemiPersistentState() {
-//Get all existing todo's from localStorgage when the app first loads: localStorage stores array as JSON string, and JSON.parse converts it back to an array
-const existingTodo =
-  JSON.parse(localStorage.getItem("savedTodoList")) ?? [];
-//Create state for todo with an intial value of existingTodo
-const [todoList, setTodoList] = useState(existingTodo);
-
+function App() {
+  const [todoList, setTodoList] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    //localStorage to store our todoList as a JSON string
-    const todoListstring = JSON.stringify(todoList);
-    //Save todoList to localStorage using a key of "savedTodoList"
-    localStorage.setItem('savedTodoList', JSON.stringify(todoList));
+    new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const existingTodo = JSON.parse(localStorage.getItem("savedTodoList")) ?? [];
+        const object = {
+          data: {
+            todoList: existingTodo,
+          },
+        };
+        resolve(object);
+      }, 2000);
+    }).then((result) => {
+      const retrievedToDoList = result.data.todoList;
+      setTodoList(retrievedToDoList);
+      setIsLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isLoading) {
+      return;
+    }
+    const todoListString = JSON.stringify(todoList);
+    localStorage.setItem("savedTodoList", todoListString);
   }, [todoList]);
-  //dependancy array in useEffect contains todoList state. Tells react to run the callback whenever todoList changes
-
-  //return the state wee wish to use in our components
-  return [todoList, setTodoList];
-}
-
-function App() {
-  //Retrieve our todoState from the customHook
-  const [todoList, setTodoList] = useSemiPersistentState([]);
 
   function addTodo(newTodo) {
     setTodoList((previousTodoList) => [...previousTodoList, newTodo]);
@@ -37,12 +43,15 @@ function App() {
   }
 
   return (
-    <div>
+    <main>
       <h1>Todo List</h1>
-      <AddTodoForm onAddTodo={addTodo} /> 
-      <TodoList onRemoveTodo={removeTodo} todoList={todoList} /> 
-    </div>
+      <AddTodoForm onAddTodo={addTodo} />
+      {isLoading ? <p>Loading...</p> : <TodoList onRemoveTodo={removeTodo} todoList={todoList} />}
+    </main>
   );
 }
 
 export default App;
+
+//How to write a ternary operator?
+// condition ? expression if true : expression if false
