@@ -1,4 +1,6 @@
 import { useEffect, useRef } from "react";
+import PropTypes from 'prop-types';
+
 
 function InputWithLabel(props) {
     // useRef used to store DOM elements in state
@@ -25,4 +27,11 @@ function InputWithLabel(props) {
     </>
     );
 }
+
+InputWithLabel.propTypes = {
+    label: PropTypes.string.isRequired,
+    value: PropTypes.string.isRequired,
+    onInputChange: PropTypes.func.isRequired,
+};
+
 export default InputWithLabel;

@@ -1,8 +1,10 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import TodoList from './todolist';
-import AddTodoForm from './AddToDoForm';
-import {BrowserRouter, Routes, Route } from "react-router-dom";
+import TodoList from './components/todolist.jsx';
+import AddTodoForm from './components/AddToDoForm.jsx';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import styles from './components/TodoListItem.module.css';
+
 
 function App() {
   const [todoList, setTodoList] = useState([]);
@@ -19,14 +21,15 @@ function App() {
         records: [
           {
             fields: {
-              title: newTodoTitle,
+              title: newTodoTitle.title,
+              id: newTodoTitle.id,
             },
           },
         ],
       }),
     };
 
-    const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`
+    const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
     try {
       const response = await fetch(url, options);
@@ -57,7 +60,7 @@ function App() {
       },
     };
 
-    const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`
+    const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
     try {
       const response = await fetch(url, options);
@@ -83,7 +86,7 @@ function App() {
   useEffect(() => {
     fetchData();
   }, []);
-  
+
   function removeTodo(id) {
     const filteredTodo = todoList.filter((todo) => todo.id !== id);
     setTodoList(filteredTodo);
@@ -92,20 +95,35 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element ={
-          <main>
-            <h1>Todo List</h1>
-            <AddTodoForm onAddTodo={addTodo} />
-            {isLoading ? <p>Loading...</p> : <TodoList onRemoveTodo={removeTodo} todoList={todoList} />}
-          </main>}>
-        </Route>
-        <Route path="/new" element={<h1>New Todo List</h1>} / >
-    </Routes>
-  </BrowserRouter>
+        <Route
+          path="/"
+          element={
+            <main>
+              <h1>Todo List</h1>
+              <AddTodoForm onAddTodo={addTodo} />
+              {isLoading ? (
+                <p>Loading...</p>
+              ) : (
+                <TodoList onRemoveTodo={removeTodo} todoList={todoList} />
+              )}
+            </main>
+          }
+        ></Route>
+
+        {/* Number 3 ternary condition */}
+        <Route
+          path="/new"
+          element={
+            <h1>
+              {todoList.length === 0
+                ? "New Todo List"
+                : `There are ${todoList.length} todos`}
+            </h1>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
 export default App;
-
-//How to write a ternary operator?
-// condition ? expression if true : expression if false
