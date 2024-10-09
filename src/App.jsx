@@ -2,7 +2,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import TodoList from './components/todolist.jsx';
 import AddTodoForm from './components/AddToDoForm.jsx';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import styles from './components/TodoListItem.module.css';
 
 function sortTodosAscending(objectA, objectB) {
@@ -151,10 +151,22 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <Router>
+      <nav>
+        <ul>
+          <li><Link to="/">Landing Page</Link></li>
+          <li><Link to="/todolist">Todo List</Link></li>
+        </ul>
+      </nav>
+
       <Routes>
         <Route
           path="/"
+          element={<h1>Welcome to my Todo App!</h1>}
+        />
+
+        <Route
+          path="/todolist"
           element={
             <main>
               <h1>Todo List</h1>
@@ -169,20 +181,9 @@ function App() {
               )}
             </main>
           }
-        ></Route>
-
-        <Route
-          path="/new"
-          element={
-            <h1>
-              {todoList.length === 0
-                ? "New Todo List"
-                : `There are ${todoList.length} todos`}
-            </h1>
-          }
         />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
 }
 
