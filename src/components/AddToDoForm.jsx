@@ -1,30 +1,40 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import InputWithLabel from './InputWithLabel'; // Ensure this import is correct
 
-export default function AddTodoForm({ onAddTodo }) {
+function AddTodoForm({ onAddTodo }) {
   const [todoTitle, setTodoTitle] = useState('');
 
-  // Define the handleChange function
-  const handleChange = (e) => {
-    setTodoTitle(e.target.value); // Update the state with input value
+  const handleTitleChange = (event) => {
+    setTodoTitle(event.target.value);
   };
 
-  const handleAddTodo = (e) => {
-    e.preventDefault();
-    if (todoTitle.trim()) {
-      onAddTodo({ title: todoTitle, id: Date.now().toString() }); // Add a new todo
-      setTodoTitle(''); // Reset input field
+  const handleAddTodo = (event) => {
+    event.preventDefault();
+    
+    // Clean the input by removing semicolons and trimming whitespace
+    const cleanedTitle = todoTitle.replace(/;/g, '').trim();
+
+    if (cleanedTitle) {
+      // Create a new todo object with title and id
+      const newTodo = {
+        title: cleanedTitle,
+        id: Date.now().toString(), // Generate a unique ID using timestamp
+      };
+      console.log('Adding new todo:', newTodo); // Log the new todo for debugging
+      onAddTodo(newTodo); // Call the onAddTodo prop with the new todo
+      setTodoTitle(''); // Reset the input field
     }
   };
 
   return (
     <form onSubmit={handleAddTodo}>
-      <input
-        type="text"
-        value={todoTitle}
-        onChange={handleChange} // Use the handleChange function
-        placeholder="Add a new todo"
-      />
+      <InputWithLabel 
+        todoTitle={todoTitle} 
+        handleTitleChange={handleTitleChange}
+      >
+        Todo Title
+      </InputWithLabel>
       <button type="submit">Add Todo</button>
     </form>
   );
@@ -33,3 +43,5 @@ export default function AddTodoForm({ onAddTodo }) {
 AddTodoForm.propTypes = {
   onAddTodo: PropTypes.func.isRequired,
 };
+
+export default AddTodoForm;

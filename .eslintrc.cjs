@@ -18,5 +18,6 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    semi: 'off', // Disable semicolon enforcement
   },
 }

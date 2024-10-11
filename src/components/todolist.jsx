@@ -1,21 +1,21 @@
 import TodoListItem from "./todolistitem.jsx";
 import PropTypes from 'prop-types';
 
-export default function TodosList({ todoList, onRemoveTodo }) {
+export default function TodoList({ todoList, onRemoveTodo }) {
   return (
-    <ul>
-      {todoList.map((todo) => (
-        <TodoListItem
-          key={todo.id}
-          todo={todo}  
-          onRemoveTodo={onRemoveTodo}
+    <div>
+      {todoList.map(todo => (
+        <TodoListItem 
+          key={todo.id} 
+          todo={{ ...todo, title: todo.title.replace(/;/g, '') }} // Clean the title here
+          onRemoveTodo={onRemoveTodo} 
         />
       ))}
-    </ul>
+    </div>
   );
 }
 
-TodosList.propTypes = {
+TodoList.propTypes = {
   todoList: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,

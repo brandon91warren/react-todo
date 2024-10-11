@@ -1,51 +1,69 @@
-/* src/TodoListItem.module.css */
-
 /* Change the background color of the page body */
 body {
-  background-color: #e8e8e8; /* Slightly off-white for a paper-like effect */
-  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)), /* Diagonal lines */
-                    linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%, rgba(0, 0, 0, 0.05)); /* Cross-hatching effect */
-  color: #333; /* Default text color */
-  font-family: 'Georgia', serif; /* Updated font family to Georgia */
+  background-color: #e8e8e8;
+  background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 75%, rgba(255, 255, 255, 0.1) 75%, rgba(255, 255, 255, 0.1)),
+                    linear-gradient(45deg, rgba(0, 0, 0, 0.05) 25%, transparent 25%, transparent 75%, rgba(0, 0, 0, 0.05) 75%, rgba(0, 0, 0, 0.05));
+  color: #333;
+  font-family: 'Georgia', sans-serif; 
   margin: 0;
-  padding: 0;
+  padding: 20px; /* Add padding around body */
 }
 
 /* Customize the default text color */
 .ListItem {
-  color: #333; /* Dark gray for list items */
+  color: #333;
   font-size: 16px;
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 2px solid #ccc; /* Added border around list items */
-  border-radius: 5px; /* Optional: add border-radius for rounded corners */
-  background-color: rgba(255, 255, 255, 0.9); /* Light paper-like background for list items */
+  margin-bottom: 15px; /* Space between list items */
+  padding: 15px; /* Increased padding inside list items */
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex; /* Apply flexbox */
+  justify-content: space-between; /* Distribute items with space between */
+  align-items: center; /* Center items vertically */
 }
 
-/* Customize style of navigation items */
+/* Flexbox for the nav items */
+nav {
+  margin-bottom: 20px; /* Add spacing below the nav */
+  display: flex;
+  justify-content: center; /* Center the nav links */
+}
+
+nav ul {
+  list-style-type: none; /* Remove bullet points */
+  display: flex; /* Use flexbox to arrange items in a row */
+  padding: 0; /* Remove default padding */
+}
+
+nav ul li {
+  margin-right: 15px; /* Add some space between the links */
+}
+
 nav a {
   text-decoration: none;
   padding: 10px 15px;
-  color: #007bff; /* Link color */
+  color: #007bff;
   font-weight: bold;
 }
 
 nav a:hover {
-  color: #0056b3; /* Hover state */
+  color: #0056b3;
 }
 
 /* Add spacing (padding/margin) between elements */
 .ListItem, 
 input, 
 button {
-  margin-bottom: 15px;
-  padding: 10px;
+  margin-bottom: 25px; /* Increase margin between elements */
+  padding: 20px; /* Increase padding inside input and button */
 }
 
 /* Change font size, weight, and color of all headings */
 h1, h2, h3, h4, h5, h6 {
   color: #2c3e50;
   font-weight: 600;
+  margin-bottom: 15px; /* Add margin below headings */
 }
 
 h1 {
@@ -63,7 +81,7 @@ h3 {
 /* Customize input and button styles */
 input {
   border: 1px solid #ccc;
-  padding: 10px;
+  padding: 12px; /* Slightly larger padding for inputs */
   border-radius: 4px;
   width: 100%;
 }
@@ -71,8 +89,8 @@ input {
 button {
   background-color: #28a745;
   color: white;
-  border: 2px solid #ccc; /* Added border around buttons */
-  padding: 10px 15px;
+  border: 2px solid #ccc;
+  padding: 15px 25px; /* Increase padding inside buttons */
   border-radius: 4px;
   cursor: pointer;
 }
@@ -81,9 +99,7 @@ button:hover {
   background-color: #218838;
 }
 
-/* Use Media Queries for responsive design */
-
-/* Mobile first (default styles already mobile-friendly) */
+/* Media Queries */
 
 /* Tablet */
 @media (min-width: 768px) {
@@ -94,9 +110,10 @@ button:hover {
   h1 {
     font-size: 3rem;
   }
-  
+
   .ListItem {
     font-size: 18px;
+    padding: 20px; /* Add more padding to list items on tablet */
   }
 }
 
@@ -112,11 +129,12 @@ button:hover {
 
   .ListItem {
     font-size: 20px;
+    padding: 25px; /* Increase padding further on desktop */
   }
 }
 
-/* (Optional) Multi-media usage (i.e. iconography) */
+/* Button icon */
 button::before {
-  content: '✔'; /* Add an icon before the button text */
-  margin-right: 8px;
+  content: '✔';
+  margin-right: 10px;
 }

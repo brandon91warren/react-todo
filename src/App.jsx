@@ -1,37 +1,17 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import TodoList from './components/todolist.jsx';
-import AddTodoForm from './components/AddToDoForm.jsx';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TodoList from './components/todolist.jsx'; // Ensure the file name matches exactly
+import AddTodoForm from './components/AddToDoForm.jsx'; // Ensure the file name matches exactly
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import styles from './components/TodoListItem.module.css';
-
-function sortTodosAscending(objectA, objectB) {
-  if (new Date(objectA.createdTime) < new Date(objectB.createdTime)) {
-    return -1;  // For ascending order
-  } else if (new Date(objectA.createdTime) > new Date(objectB.createdTime)) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-function sortTodosDescending(objectA, objectB) {
-  if (new Date(objectA.createdTime) < new Date(objectB.createdTime)) {
-    return 1;   // For descending order
-  } else if (new Date(objectA.createdTime) > new Date(objectB.createdTime)) {
-    return -1;
-  } else {
-    return 0;
-  }
-}
 
 function App() {
   const [todoList, setTodoList] = useState([]);
   const [sortAsc, setSortAsc] = useState(true);  // Sort direction state
   const [isLoading, setIsLoading] = useState(true);
 
-  // Add new todo and sort the list automatically
-  async function addTodo(newTodoTitle) {
+  // Add new todo
+  async function addTodo(newTodo) {
     const options = {
       method: "POST",
       headers: {
@@ -42,9 +22,7 @@ function App() {
         records: [
           {
             fields: {
-              title: newTodoTitle.title,
-              id: newTodoTitle.id,
-              createdTime: new Date().toISOString()  // Capture created time when adding
+              title: newTodo.title, // Ensure this matches your Airtable base field
             },
           },
         ],
@@ -54,32 +32,37 @@ function App() {
     const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
     try {
+      console.log("Payload to Airtable:", {
+        records: [
+          {
+            fields: {
+              title: newTodo.title,
+            },
+          },
+        ],
+      }); // Log the payload
+
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      const newTodo = {
+      const newTodoFromAPI = {
         title: data.records[0].fields.title,
         id: data.records[0].id,
-        createdTime: data.records[0].createdTime  // Store created time
       };
 
-      // Add new todo and sort the updated list
-      setTodoList((prevTodoList) => {
-        const updatedList = [newTodo, ...prevTodoList];
-        return sortedTodos(updatedList);  // Sort the updated list
-      });
+      // Update to append the new todo at the bottom
+      setTodoList((prevTodoList) => [...prevTodoList, newTodoFromAPI]);
     } catch (error) {
-      console.log(error.message);
-      return null;
+      console.error('Error adding todo:', error.message);
     }
   }
 
-  // Fetch todos and sort them
+  // Fetch todos
   async function fetchData() {
     const options = {
       method: "GET",
@@ -96,51 +79,30 @@ function App() {
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      const todos = data.records.map((todo) => {
-        return { 
-          id: todo.id, 
-          title: todo.fields.title, 
-          createdTime: todo.createdTime // Ensure we fetch the createdTime
-        };
-      });
+      const todos = data.records.map((todo) => ({
+        id: todo.id,
+        title: todo.fields.title,
+      }));
 
-      setTodoList(sortedTodos(todos));  // Sort and store the fetched todos
+      setTodoList(todos);
       setIsLoading(false);
     } catch (error) {
-      console.log(error.message);
-      return null;
+      console.error('Error fetching todos:', error.message);
     }
   }
 
-  // Automatically re-sort todos when todoList changes
-  useEffect(() => {
-    setTodoList((prevTodoList) => sortedTodos(prevTodoList));
-  }, [todoList, sortAsc]);
-
+  // Automatically fetch data when component loads
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Sort todos based on the current sort order
-  function sortedTodos(todos) {
-    return todos.sort((objectA, objectB) => {
-      if (sortAsc) {
-        return sortTodosAscending(objectA, objectB);  // Use createdTime sorting
-      } else {
-        return sortTodosDescending(objectA, objectB);
-      }
-    });
-  }
-
   // Handle sorting toggle
   function handleSortToggleClick() {
-    const sortedList = sortedTodos([...todoList]);  // Sort the existing todo list
-    setTodoList(sortedList);  // Update the state with the sorted list
     setSortAsc(!sortAsc);  // Toggle the sorting direction
   }
 
@@ -150,8 +112,28 @@ function App() {
     setTodoList(filteredTodo);
   }
 
+  // Sort todos based on the selected direction
+  const sortedTodoList = [...todoList].sort((a, b) => {
+    if (sortAsc) {
+      return a.id.localeCompare(b.id); // Change to a.date - b.date if id represents date
+    } else {
+      return b.id.localeCompare(a.id); // Change to b.date - a.date if id represents date
+    }
+  });
+
   return (
     <BrowserRouter>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">To Do List</Link>
+          </li>
+          <li>
+            <Link to="/new">Landing Page</Link>
+          </li>
+        </ul>
+      </nav>
+
       <Routes>
         <Route
           path="/"
@@ -165,11 +147,11 @@ function App() {
               {isLoading ? (
                 <p>Loading...</p>
               ) : (
-                <TodoList onRemoveTodo={removeTodo} todoList={todoList} />
+                <TodoList onRemoveTodo={removeTodo} todoList={sortedTodoList} />
               )}
             </main>
           }
-        ></Route>
+        />
 
         <Route
           path="/new"
@@ -177,7 +159,7 @@ function App() {
             <h1>
               {todoList.length === 0
                 ? "New Todo List"
-                : `There are ${todoList.length} todos`}
+                : `Welcome to my To Do List App`}
             </h1>
           }
         />
