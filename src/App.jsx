@@ -2,35 +2,15 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import TodoList from './components/todolist.jsx';
 import AddTodoForm from './components/AddToDoForm.jsx';
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import styles from './components/TodoListItem.module.css';
-
-function sortTodosAscending(objectA, objectB) {
-  if (new Date(objectA.createdTime) < new Date(objectB.createdTime)) {
-    return -1;  // For ascending order
-  } else if (new Date(objectA.createdTime) > new Date(objectB.createdTime)) {
-    return 1;
-  } else {
-    return 0;
-  }
-}
-
-function sortTodosDescending(objectA, objectB) {
-  if (new Date(objectA.createdTime) < new Date(objectB.createdTime)) {
-    return 1;   // For descending order
-  } else if (new Date(objectA.createdTime) > new Date(objectB.createdTime)) {
-    return -1;
-  } else {
-    return 0;
-  }
-}
 
 function App() {
   const [todoList, setTodoList] = useState([]);
   const [sortAsc, setSortAsc] = useState(true);  // Sort direction state
   const [isLoading, setIsLoading] = useState(true);
 
-  // Add new todo and sort the list automatically
+  // Add new todo
   async function addTodo(newTodoTitle) {
     const options = {
       method: "POST",
@@ -42,9 +22,8 @@ function App() {
         records: [
           {
             fields: {
-              title: newTodoTitle.title,  // Ensure this matches your Airtable field name
-              id: newTodoTitle.id,        // Only include ID if it's part of your schema
-              createdTime: new Date().toISOString()  // Capture created time
+              title: newTodoTitle.title,
+              id: newTodoTitle.id,  // Ensure ID is sent as integer if needed
             },
           },
         ],
@@ -65,20 +44,17 @@ function App() {
       const newTodo = {
         title: data.records[0].fields.title,
         id: data.records[0].id,
-        createdTime: data.records[0].createdTime  // Store created time
       };
 
-      // Add new todo and sort the updated list
-      setTodoList((prevTodoList) => {
-        const updatedList = [newTodo, ...prevTodoList];
-        return sortedTodos(updatedList);  // Sort the updated list
-      });
+      // Add new todo and update list
+      setTodoList((prevTodoList) => [newTodo, ...prevTodoList]);
     } catch (error) {
-      console.log("Error adding Todo: ", error.message);
+      console.log(error.message);
+      return null;
     }
   }
 
-  // Fetch todos and sort them
+  // Fetch todos
   async function fetchData() {
     const options = {
       method: "GET",
@@ -88,6 +64,7 @@ function App() {
     };
 
     const query1 = "?view=Grid%20view";
+
     const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}${query1}`;
 
     try {
@@ -103,52 +80,24 @@ function App() {
         return { 
           id: todo.id, 
           title: todo.fields.title, 
-          createdTime: todo.createdTime  // Ensure we fetch the createdTime
         };
       });
 
-      setTodoList(sortedTodos(todos));  // Sort and store the fetched todos
+      setTodoList(todos);
       setIsLoading(false);
     } catch (error) {
       console.log(error.message);
       return null;
     }
-
-    // Fetching from the Airtable API and logging the data
-    const airtableAPIURL = "https://api.airtable.com/v0/appLfvvCytTr5x4XM/ToDoListBase"
-    fetch(airtableAPIURL)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data); // Check the structure of your data here
-        // Process your data, possibly passing it to TodoList or a similar component
-      })
-      .catch(error => console.error('Error fetching data:', error));
   }
 
-  // Automatically re-sort todos when todoList changes
-  useEffect(() => {
-    setTodoList((prevTodoList) => sortedTodos(prevTodoList));
-  }, [todoList, sortAsc]);
-
+  // Automatically fetch data when component loads
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Sort todos based on the current sort order
-  function sortedTodos(todos) {
-    return todos.sort((objectA, objectB) => {
-      if (sortAsc) {
-        return sortTodosAscending(objectA, objectB);  // Use createdTime sorting
-      } else {
-        return sortTodosDescending(objectA, objectB);
-      }
-    });
-  }
-
   // Handle sorting toggle
   function handleSortToggleClick() {
-    const sortedList = sortedTodos([...todoList]);  // Sort the existing todo list
-    setTodoList(sortedList);  // Update the state with the sorted list
     setSortAsc(!sortAsc);  // Toggle the sorting direction
   }
 
@@ -159,22 +108,10 @@ function App() {
   }
 
   return (
-    <Router>
-      <nav>
-        <ul>
-          <li><Link to="/">Landing Page</Link></li>
-          <li><Link to="/todolist">Todo List</Link></li>
-        </ul>
-      </nav>
-
+    <BrowserRouter>
       <Routes>
         <Route
           path="/"
-          element={<h1>Welcome to my Todo App!</h1>}
-        />
-
-        <Route
-          path="/todolist"
           element={
             <main>
               <h1>Todo List</h1>
@@ -189,9 +126,20 @@ function App() {
               )}
             </main>
           }
+        ></Route>
+
+        <Route
+          path="/new"
+          element={
+            <h1>
+              {todoList.length === 0
+                ? "New Todo List"
+                : `There are ${todoList.length} todos`}
+            </h1>
+          }
         />
       </Routes>
-    </Router>
+    </BrowserRouter>
   );
 }
 
