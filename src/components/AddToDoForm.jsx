@@ -11,16 +11,17 @@ function AddTodoForm({ onAddTodo }) {
 
   const handleAddTodo = (event) => {
     event.preventDefault();
-    // Clean the input by removing semicolons
+    
+    // Clean the input by removing semicolons and trimming whitespace
     const cleanedTitle = todoTitle.replace(/;/g, '').trim();
 
     if (cleanedTitle) {
-      // Create a new todo object with title, id, and createdTime
+      // Create a new todo object with title and id
       const newTodo = {
         title: cleanedTitle,
-        id: Date.now().toString(),
-        createdTime: new Date().toISOString(), // Capture the current time in ISO format
+        id: Date.now().toString(), // Generate a unique ID using timestamp
       };
+      console.log('Adding new todo:', newTodo); // Log the new todo for debugging
       onAddTodo(newTodo); // Call the onAddTodo prop with the new todo
       setTodoTitle(''); // Reset the input field
     }

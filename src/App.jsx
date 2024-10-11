@@ -1,8 +1,8 @@
 import "./App.css";
 import { useEffect, useState } from "react";
-import TodoList from './components/todolist.jsx';
-import AddTodoForm from './components/AddToDoForm.jsx';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import TodoList from './components/todolist.jsx'; // Ensure the file name matches exactly
+import AddTodoForm from './components/AddToDoForm.jsx'; // Ensure the file name matches exactly
+import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import styles from './components/TodoListItem.module.css';
 
 function App() {
@@ -11,7 +11,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Add new todo
-  async function addTodo(newTodoTitle) {
+  async function addTodo(newTodo) {
     const options = {
       method: "POST",
       headers: {
@@ -22,8 +22,7 @@ function App() {
         records: [
           {
             fields: {
-              title: newTodoTitle.title,
-              id: newTodoTitle.id,  // Ensure ID is sent as integer if needed
+              title: newTodo.title, // Ensure this matches your Airtable base field
             },
           },
         ],
@@ -33,24 +32,33 @@ function App() {
     const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}`;
 
     try {
+      console.log("Payload to Airtable:", {
+        records: [
+          {
+            fields: {
+              title: newTodo.title,
+            },
+          },
+        ],
+      }); // Log the payload
+
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      const newTodo = {
+      const newTodoFromAPI = {
         title: data.records[0].fields.title,
         id: data.records[0].id,
       };
 
-      // Add new todo and update list
-      setTodoList((prevTodoList) => [newTodo, ...prevTodoList]);
+      // Update to append the new todo at the bottom
+      setTodoList((prevTodoList) => [...prevTodoList, newTodoFromAPI]);
     } catch (error) {
-      console.log(error.message);
-      return null;
+      console.error('Error adding todo:', error.message);
     }
   }
 
@@ -71,23 +79,20 @@ function App() {
       const response = await fetch(url, options);
 
       if (!response.ok) {
-        throw new Error(`${response.status}`);
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
 
-      const todos = data.records.map((todo) => {
-        return { 
-          id: todo.id, 
-          title: todo.fields.title, 
-        };
-      });
+      const todos = data.records.map((todo) => ({
+        id: todo.id,
+        title: todo.fields.title,
+      }));
 
       setTodoList(todos);
       setIsLoading(false);
     } catch (error) {
-      console.log(error.message);
-      return null;
+      console.error('Error fetching todos:', error.message);
     }
   }
 
@@ -107,8 +112,28 @@ function App() {
     setTodoList(filteredTodo);
   }
 
+  // Sort todos based on the selected direction
+  const sortedTodoList = [...todoList].sort((a, b) => {
+    if (sortAsc) {
+      return a.id.localeCompare(b.id); // Change to a.date - b.date if id represents date
+    } else {
+      return b.id.localeCompare(a.id); // Change to b.date - a.date if id represents date
+    }
+  });
+
   return (
     <BrowserRouter>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">To Do List</Link>
+          </li>
+          <li>
+            <Link to="/new">Landing Page</Link>
+          </li>
+        </ul>
+      </nav>
+
       <Routes>
         <Route
           path="/"
@@ -122,11 +147,11 @@ function App() {
               {isLoading ? (
                 <p>Loading...</p>
               ) : (
-                <TodoList onRemoveTodo={removeTodo} todoList={todoList} />
+                <TodoList onRemoveTodo={removeTodo} todoList={sortedTodoList} />
               )}
             </main>
           }
-        ></Route>
+        />
 
         <Route
           path="/new"
@@ -134,7 +159,7 @@ function App() {
             <h1>
               {todoList.length === 0
                 ? "New Todo List"
-                : `There are ${todoList.length} todos`}
+                : `Welcome to my To Do List App`}
             </h1>
           }
         />

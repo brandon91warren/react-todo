@@ -1,5 +1,3 @@
-/* src/TodoListItem.module.css */
-
 /* Change the background color of the page body */
 body {
   background-color: #e8e8e8;
@@ -20,11 +18,26 @@ body {
   border: 2px solid #ccc;
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.9);
+  display: flex; /* Apply flexbox */
+  justify-content: space-between; /* Distribute items with space between */
+  align-items: center; /* Center items vertically */
 }
 
-/* Customize style of navigation items */
+/* Flexbox for the nav items */
 nav {
   margin-bottom: 20px; /* Add spacing below the nav */
+  display: flex;
+  justify-content: center; /* Center the nav links */
+}
+
+nav ul {
+  list-style-type: none; /* Remove bullet points */
+  display: flex; /* Use flexbox to arrange items in a row */
+  padding: 0; /* Remove default padding */
+}
+
+nav ul li {
+  margin-right: 15px; /* Add some space between the links */
 }
 
 nav a {
