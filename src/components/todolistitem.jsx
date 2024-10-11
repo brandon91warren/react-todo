@@ -13,6 +13,7 @@ TodoListItem.propTypes = {
   todo: PropTypes.shape({
     id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
+    createdTime: PropTypes.string.isRequired, // Include createdTime if needed
   }).isRequired,
   onRemoveTodo: PropTypes.func.isRequired,
 };

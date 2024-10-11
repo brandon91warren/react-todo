@@ -42,9 +42,9 @@ function App() {
         records: [
           {
             fields: {
-              title: newTodoTitle.title,
-              id: newTodoTitle.id,
-              createdTime: new Date().toISOString()  // Capture created time when adding
+              title: newTodoTitle.title,  // Ensure this matches your Airtable field name
+              id: newTodoTitle.id,        // Only include ID if it's part of your schema
+              createdTime: new Date().toISOString()  // Capture created time
             },
           },
         ],
@@ -74,8 +74,7 @@ function App() {
         return sortedTodos(updatedList);  // Sort the updated list
       });
     } catch (error) {
-      console.log(error.message);
-      return null;
+      console.log("Error adding Todo: ", error.message);
     }
   }
 
@@ -89,7 +88,6 @@ function App() {
     };
 
     const query1 = "?view=Grid%20view";
-
     const url = `https://api.airtable.com/v0/${import.meta.env.VITE_AIRTABLE_BASE_ID}/${import.meta.env.VITE_TABLE_NAME}${query1}`;
 
     try {
@@ -105,7 +103,7 @@ function App() {
         return { 
           id: todo.id, 
           title: todo.fields.title, 
-          createdTime: todo.createdTime // Ensure we fetch the createdTime
+          createdTime: todo.createdTime  // Ensure we fetch the createdTime
         };
       });
 
@@ -115,6 +113,16 @@ function App() {
       console.log(error.message);
       return null;
     }
+
+    // Fetching from the Airtable API and logging the data
+    const airtableAPIURL = "https://api.airtable.com/v0/appLfvvCytTr5x4XM/ToDoListBase"
+    fetch(airtableAPIURL)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data); // Check the structure of your data here
+        // Process your data, possibly passing it to TodoList or a similar component
+      })
+      .catch(error => console.error('Error fetching data:', error));
   }
 
   // Automatically re-sort todos when todoList changes

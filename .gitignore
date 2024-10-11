@@ -13,10 +13,6 @@ dist-ssr
 .cache/
 out/
 
-# Environment variables
-.env
-.env.local
-.env.*.local
 
 # Coverage reports
 coverage/

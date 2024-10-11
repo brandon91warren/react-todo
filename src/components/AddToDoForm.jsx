@@ -1,4 +1,3 @@
-// AddTodoForm.jsx
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import InputWithLabel from './InputWithLabel'; // Ensure this import is correct
@@ -12,15 +11,27 @@ function AddTodoForm({ onAddTodo }) {
 
   const handleAddTodo = (event) => {
     event.preventDefault();
-    if (todoTitle.trim()) {
-      onAddTodo({ title: todoTitle, id: Date.now().toString() });
+    // Clean the input by removing semicolons
+    const cleanedTitle = todoTitle.replace(/;/g, '').trim();
+
+    if (cleanedTitle) {
+      // Create a new todo object with title, id, and createdTime
+      const newTodo = {
+        title: cleanedTitle,
+        id: Date.now().toString(),
+        createdTime: new Date().toISOString(), // Capture the current time in ISO format
+      };
+      onAddTodo(newTodo); // Call the onAddTodo prop with the new todo
       setTodoTitle(''); // Reset the input field
     }
   };
 
   return (
     <form onSubmit={handleAddTodo}>
-      <InputWithLabel todoTitle={todoTitle} handleTitleChange={handleTitleChange}>
+      <InputWithLabel 
+        todoTitle={todoTitle} 
+        handleTitleChange={handleTitleChange}
+      >
         Todo Title
       </InputWithLabel>
       <button type="submit">Add Todo</button>
