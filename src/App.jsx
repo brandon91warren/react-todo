@@ -53,6 +53,7 @@ function App() {
       const newTodoFromAPI = {
         title: data.records[0].fields.title,
         id: data.records[0].id,
+        createdTime: data.records[0].createdTime, // Get the created time from API response
       };
 
       // Update to append the new todo at the bottom
@@ -87,6 +88,7 @@ function App() {
       const todos = data.records.map((todo) => ({
         id: todo.id,
         title: todo.fields.title,
+        createdTime: todo.createdTime, // Get the created time from API response
       }));
 
       setTodoList(todos);
@@ -115,9 +117,9 @@ function App() {
   // Sort todos based on the selected direction
   const sortedTodoList = [...todoList].sort((a, b) => {
     if (sortAsc) {
-      return a.id.localeCompare(b.id); // Change to a.date - b.date if id represents date
+      return new Date(a.createdTime) - new Date(b.createdTime); // Ascending order
     } else {
-      return b.id.localeCompare(a.id); // Change to b.date - a.date if id represents date
+      return new Date(b.createdTime) - new Date(a.createdTime); // Descending order
     }
   });
 
@@ -129,7 +131,7 @@ function App() {
             <Link to="/">To Do List</Link>
           </li>
           <li>
-            <Link to="/new">Landing Page</Link>
+            <Link to="/new">Home</Link>
           </li>
         </ul>
       </nav>
